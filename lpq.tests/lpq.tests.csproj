@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DAC44A06-4F1F-4BAD-913C-EF006E12F05D}</ProjectGuid>
+    <ProjectGuid>{114FF269-089A-4387-A62E-7F15866BDB1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>lpq.tests</RootNamespace>
     <AssemblyName>lpq.tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,7 +40,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -52,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lpq\lpq.csproj">
-      <Project>{f1fbe954-8ea3-476d-8ba0-c3e99d173d0c}</Project>
+      <Project>{1dd70cb8-38fd-4ef8-acee-c28a4983eaa3}</Project>
       <Name>lpq</Name>
     </ProjectReference>
   </ItemGroup>
