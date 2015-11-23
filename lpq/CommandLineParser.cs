@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace lpq
 {
@@ -34,6 +35,11 @@ namespace lpq
             if (job.Printer == null)
             {
                 throw new ApplicationException("Missing printer parameter (-P)");
+            }
+
+            if (new[] {" ", "\x08", "\x09", "\x0C"}.Any(c => job.Printer.Contains(c)))
+            {
+                throw new ApplicationException("Printer name cannot contain spaces.");
             }
 
             return job;

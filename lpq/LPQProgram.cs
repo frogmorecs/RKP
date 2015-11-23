@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -11,18 +12,16 @@ namespace lpq
         {
             var job = CommandLineParser.ParseCommandLine(args);
 
-            var client = new TcpClient(job.Server, 515);
-            var stream = client.GetStream();
-
-            var streamWriter = new StreamWriter(stream, Encoding.ASCII);
-            streamWriter.Write($"\x03{job.Printer} \n");
-            streamWriter.Flush();
-
-            var streamReader = new StreamReader(stream, Encoding.ASCII);
-            while (!streamReader.EndOfStream)
+            using (var client = new TcpClient(job.Server, 515))
+            using (var stream = client.GetStream())
             {
-                Console.WriteLine(streamReader.ReadLine());
+                var lines = LPR.QueryPrinter(stream, job);
+                foreach (var line in lines)
+                {
+                    Console.WriteLine(line);
+                }
             }
+
         }
     }
 }

@@ -39,5 +39,13 @@ namespace lpq.tests
             var cmd = "-S server file.prn".Split(' ');
             CommandLineParser.ParseCommandLine(cmd);
         }
+
+        [Test]
+        [ExpectedException(typeof (ApplicationException))]
+        public void ParseCommandLinePrinterShouldntHaveSpaces()
+        {
+            var cmd = new[] {"-Sserver", "-Pprinter name"};
+            CommandLineParser.ParseCommandLine(cmd);
+        }
     }
 }
