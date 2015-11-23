@@ -16,7 +16,8 @@ namespace lpq
             using (var streamWriter = new StreamWriter(stream, Encoding.ASCII))
             using (var streamReader = new StreamReader(stream, Encoding.ASCII))
             {
-                streamWriter.Write($"\x03{job.Printer} \n");
+                var code = job.Verbose ? '\x04' : '\x03';
+                streamWriter.Write($"{code}{job.Printer} \n");
                 streamWriter.Flush();
 
                 while (!streamReader.EndOfStream)
