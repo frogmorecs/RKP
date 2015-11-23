@@ -25,7 +25,7 @@ namespace lpq.tests
         }
 
         [Test]
-        [ExpectedException(typeof (ApplicationException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void ParseCommandLineMissingServer()
         {
             var cmd = "-P printer file.prn".Split(' ');
@@ -33,7 +33,7 @@ namespace lpq.tests
         }
 
         [Test]
-        [ExpectedException(typeof (ApplicationException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void ParseCommandLineMissingPrinter()
         {
             var cmd = "-S server file.prn".Split(' ');
@@ -41,7 +41,7 @@ namespace lpq.tests
         }
 
         [Test]
-        [ExpectedException(typeof (ApplicationException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void ParseCommandLinePrinterShouldntHaveSpaces()
         {
             var cmd = new[] {"-Sserver", "-Pprinter name"};

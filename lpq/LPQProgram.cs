@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace lpq
 {
@@ -9,14 +8,10 @@ namespace lpq
         {
             var job = CommandLineParser.ParseCommandLine(args);
 
-            using (var client = new TcpClient(job.Server, 515))
-            using (var stream = client.GetStream())
+            var lines = LPRClient.QueryPrinter(job);
+            foreach (var line in lines)
             {
-                var lines = LPR.QueryPrinter(stream, job);
-                foreach (var line in lines)
-                {
-                    Console.WriteLine(line);
-                }
+                Console.WriteLine(line);
             }
 
         }

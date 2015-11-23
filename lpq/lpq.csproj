@@ -49,7 +49,7 @@
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="LPQProgram.cs" />
-    <Compile Include="LPR.cs" />
+    <Compile Include="LPRClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

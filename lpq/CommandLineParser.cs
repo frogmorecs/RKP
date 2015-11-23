@@ -29,17 +29,17 @@ namespace lpq
 
             if (job.Server == null)
             {
-                throw new ApplicationException("Missing server parameter (-S)");
+                throw new ArgumentException("Missing server parameter (-S)");
             }
 
             if (job.Printer == null)
             {
-                throw new ApplicationException("Missing printer parameter (-P)");
+                throw new ArgumentException("Missing printer parameter (-P)");
             }
 
             if (new[] {" ", "\x08", "\x09", "\x0C"}.Any(c => job.Printer.Contains(c)))
             {
-                throw new ApplicationException("Printer name cannot contain spaces.");
+                throw new ArgumentException("Printer name cannot contain spaces.");
             }
 
             return job;
