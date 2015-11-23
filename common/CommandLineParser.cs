@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using common;
 
-namespace lpq
+namespace common
 {
     public class CommandLineParser
     {

@@ -1,8 +1,7 @@
 ﻿using System;
-using common;
 using NUnit.Framework;
 
-namespace lpq.tests
+namespace common.tests
 {
     [TestFixture]
     public class CommandLineParserTests

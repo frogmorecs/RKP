@@ -7,8 +7,8 @@
     <ProjectGuid>{114FF269-089A-4387-A62E-7F15866BDB1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lpq.tests</RootNamespace>
-    <AssemblyName>lpq.tests</AssemblyName>
+    <RootNamespace>common.tests</RootNamespace>
+    <AssemblyName>common.tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
