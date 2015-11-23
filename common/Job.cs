@@ -1,4 +1,4 @@
-﻿namespace lpq
+﻿namespace common
 {
     public struct Job
     {

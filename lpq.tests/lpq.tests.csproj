@@ -50,6 +50,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{2dc143e0-fc8c-4118-9999-dfa69454e438}</Project>
+      <Name>common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lpq\lpq.csproj">
       <Project>{1dd70cb8-38fd-4ef8-acee-c28a4983eaa3}</Project>
       <Name>lpq</Name>
