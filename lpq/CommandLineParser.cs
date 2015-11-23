@@ -24,10 +24,6 @@ namespace lpq
                 {
                     job.Verbose = true;
                 }
-                else
-                {
-                    job.Path = currentArgument;
-                }
             }
 
             if (job.Server == null)
@@ -38,11 +34,6 @@ namespace lpq
             if (job.Printer == null)
             {
                 throw new ApplicationException("Missing printer parameter (-P)");
-            }
-
-            if (job.Path == null)
-            {
-                throw new ApplicationException("Missing file path");
             }
 
             return job;

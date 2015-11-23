@@ -12,7 +12,7 @@ namespace lpq.tests
             var cmd = "-Smypc -Pprinter -l file.prn".Split(' ');
             var job = CommandLineParser.ParseCommandLine(cmd);
 
-            Assert.That(job, Is.EqualTo(new Job {Server="mypc", Printer = "printer", Verbose = true, Path = "file.prn"}));
+            Assert.That(job, Is.EqualTo(new Job {Server="mypc", Printer = "printer", Verbose = true}));
         }
 
         [Test]
@@ -21,7 +21,7 @@ namespace lpq.tests
             var cmd = "-S mypc -P printer file.prn".Split(' ');
             var job = CommandLineParser.ParseCommandLine(cmd);
 
-            Assert.That(job, Is.EqualTo(new Job {Server="mypc", Printer = "printer", Verbose = false, Path = "file.prn"}));
+            Assert.That(job, Is.EqualTo(new Job {Server="mypc", Printer = "printer", Verbose = false}));
         }
 
         [Test]
@@ -37,14 +37,6 @@ namespace lpq.tests
         public void ParseCommandLineMissingPrinter()
         {
             var cmd = "-S server file.prn".Split(' ');
-            CommandLineParser.ParseCommandLine(cmd);
-        }
-
-        [Test]
-        [ExpectedException(typeof (ApplicationException))]
-        public void ParseCommandLineMissingPath()
-        {
-            var cmd = "-S server -Pprinter".Split(' ');
             CommandLineParser.ParseCommandLine(cmd);
         }
     }
