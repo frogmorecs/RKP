@@ -5,9 +5,9 @@ using System.Reflection;
 
 namespace common
 {
-    public class CommandLineParser
+    public class CommandLineParser<T> where T: new()
     {
-        public static T ParseCommandLine<T>(string[] args) where T: new()
+        public static T ParseCommandLine(string[] args) 
         {
             var job = new T();
 
@@ -16,40 +16,8 @@ namespace common
 
             for (int i = 0; i < args.Length; i++)
             {
-                var currentArgument = args[i];
 
-                foreach (var propertyInfo in properties)
-                {
-                    var parameterAttribute = GetParameterAttribute(propertyInfo);
-                    var flag = parameterAttribute.Parameter;
-
-                    if (currentArgument.StartsWith(flag))
-                    {
-                        if (required.Contains(propertyInfo.Name))
-                        {
-                            required.Remove(propertyInfo.Name);
-                        }
-
-                        if (propertyInfo.PropertyType == typeof (string))
-                        {
-                            var value = currentArgument.Length > 2 ? currentArgument.Substring(2) : args[++i];
-                            if (!parameterAttribute.AllowSpaces && value.Any(c => new[] {'\x09', '\x0B', '\x0C', ' '}.Contains(c)))
-                            {
-                                throw new ArgumentException("Spaces aren't allowed in printer names.");
-                            }
-
-                            job.GetType().GetProperty(propertyInfo.Name).SetValue(job, value, null);
-
-                            break;
-                        }
-                        if (propertyInfo.PropertyType == typeof (bool))
-                        {
-                            job.GetType().GetProperty(propertyInfo.Name).SetValue(job, true, null);
-
-                            break;
-                        }
-                    }
-                }
+                ParseArgument(args, properties, required, ref i, job);
             }
 
             if (required.Any())
@@ -58,6 +26,44 @@ namespace common
             }
 
             return job;
+        }
+
+        private static void ParseArgument(string[] args, List<PropertyInfo> properties, List<string> required, ref int i, T job)
+        {
+            var currentArgument = args[i];
+
+            foreach (var propertyInfo in properties)
+            {
+                var parameterAttribute = GetParameterAttribute(propertyInfo);
+                var flag = parameterAttribute.Parameter;
+
+                if (currentArgument.StartsWith(flag))
+                {
+                    if (required.Contains(propertyInfo.Name))
+                    {
+                        required.Remove(propertyInfo.Name);
+                    }
+
+                    if (propertyInfo.PropertyType == typeof (string))
+                    {
+                        var value = currentArgument.Length > 2 ? currentArgument.Substring(2) : args[++i];
+                        if (!parameterAttribute.AllowSpaces && value.Any(c => new[] {'\x09', '\x0B', '\x0C', ' '}.Contains(c)))
+                        {
+                            throw new ArgumentException("Spaces aren't allowed in printer names.");
+                        }
+
+                        job.GetType().GetProperty(propertyInfo.Name).SetValue(job, value, null);
+
+                        break;
+                    }
+                    if (propertyInfo.PropertyType == typeof (bool))
+                    {
+                        job.GetType().GetProperty(propertyInfo.Name).SetValue(job, true, null);
+
+                        break;
+                    }
+                }
+            }
         }
 
         private static ParameterAttribute GetParameterAttribute(PropertyInfo propertyInfo)

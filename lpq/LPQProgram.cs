@@ -23,7 +23,7 @@ namespace lpq
                 return;
             }
 
-            var job = CommandLineParser.ParseCommandLine<LPQJob>(args);
+            var job = CommandLineParser<LPQJob>.ParseCommandLine(args);
             var lines = LPRClient.QueryPrinter(job);
 
             foreach (var line in lines)
