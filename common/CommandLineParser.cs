@@ -7,63 +7,84 @@ namespace common
 {
     public class CommandLineParser<T> where T: new()
     {
-        public static T ParseCommandLine(string[] args) 
+        private readonly T _job;
+        private readonly List<PropertyInfo> _properties;
+        private readonly  List<string> _requiredPropertyNames;
+        private int _current;
+        private string[] _args;
+
+        public CommandLineParser()
         {
-            var job = new T();
-
-            var properties = GetPropertiesWithParameterAttribute(typeof(T)).ToList();
-            var required = properties.Where(prop => GetParameterAttribute(prop).Required).Select(prop => prop.Name).ToList();
-
-            for (int i = 0; i < args.Length; i++)
-            {
-
-                ParseArgument(args, properties, required, ref i, job);
-            }
-
-            if (required.Any())
-            {
-                throw new ArgumentException("Missing option: " + required.First());
-            }
-
-            return job;
+            _job = new T();
+            _properties = GetPropertiesWithParameterAttribute(typeof(T));
+            _requiredPropertyNames = _properties.Where(prop => GetParameterAttribute(prop).Required).Select(prop => prop.Name).ToList();
         }
 
-        private static void ParseArgument(string[] args, List<PropertyInfo> properties, List<string> required, ref int i, T job)
+        public T ParseCommandLine(string[] args)
         {
-            var currentArgument = args[i];
+            _args = args;
 
-            foreach (var propertyInfo in properties)
+            for (_current = 0; _current < args.Length; _current++)
             {
-                var parameterAttribute = GetParameterAttribute(propertyInfo);
+                ParseArgument();
+            }
+
+            if (_requiredPropertyNames.Any())
+            {
+                throw new ArgumentException("Missing option: " + _requiredPropertyNames.First());
+            }
+
+            return _job;
+        }
+
+        private void ParseArgument()
+        {
+            ParseArgument(_args[_current]);
+        }
+
+        private void ParseArgument(string currentArgument)
+        {
+            foreach (var property in _properties)
+            {
+                var parameterAttribute = GetParameterAttribute(property);
                 var flag = parameterAttribute.Parameter;
 
-                if (currentArgument.StartsWith(flag))
+                if (!currentArgument.StartsWith(flag))
                 {
-                    if (required.Contains(propertyInfo.Name))
+                    continue;
+                }
+
+                if (_requiredPropertyNames.Contains(property.Name))
+                {
+                    _requiredPropertyNames.Remove(property.Name);
+                }
+
+
+                if (property.PropertyType == typeof (string))
+                {
+                    var value = currentArgument.Length > 2 ? currentArgument.Substring(2) : _args[++_current];
+                    if (!parameterAttribute.AllowSpaces && ContainsWhitespace(value))
                     {
-                        required.Remove(propertyInfo.Name);
+                        throw new ArgumentException("Spaces aren't allowed in printer names.");
                     }
 
-                    if (propertyInfo.PropertyType == typeof (string))
-                    {
-                        var value = currentArgument.Length > 2 ? currentArgument.Substring(2) : args[++i];
-                        if (!parameterAttribute.AllowSpaces && value.Any(c => new[] {'\x09', '\x0B', '\x0C', ' '}.Contains(c)))
-                        {
-                            throw new ArgumentException("Spaces aren't allowed in printer names.");
-                        }
+                    property.SetValue(_job, value, null);
 
-                        job.GetType().GetProperty(propertyInfo.Name).SetValue(job, value, null);
+                    break;
+                }
 
-                        break;
-                    }
-                    if (propertyInfo.PropertyType == typeof (bool))
-                    {
-                        job.GetType().GetProperty(propertyInfo.Name).SetValue(job, true, null);
+                if (property.PropertyType == typeof (bool))
+                {
+                    property.SetValue(_job, true, null);
 
-                        break;
-                    }
+                    break;
                 }
             }
+        }
+
+        private static bool ContainsWhitespace(string value)
+        {
+            return value.Any(c => new[] {'\x09', '\x0B', '\x0C', ' '}.Contains(c));
         }
 
         private static ParameterAttribute GetParameterAttribute(PropertyInfo propertyInfo)
@@ -71,9 +92,9 @@ namespace common
             return propertyInfo.GetCustomAttributes(false).OfType<ParameterAttribute>().First();
         }
 
-        private static IEnumerable<PropertyInfo> GetPropertiesWithParameterAttribute(Type type)
+        private static List<PropertyInfo> GetPropertiesWithParameterAttribute(Type type)
         {
-            return type.GetProperties().Where(HasParameterAttribute);
+            return type.GetProperties().Where(HasParameterAttribute).ToList();
         }
 
         private static bool HasParameterAttribute(PropertyInfo propertyInfo)

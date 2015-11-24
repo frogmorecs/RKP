@@ -7,11 +7,18 @@ namespace common.tests
     [TestFixture]
     public class CommandLineParserTests
     {
+        private CommandLineParser<LPQJob> _parser;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _parser = new CommandLineParser<LPQJob>();
+        }
         [Test]
         public void ParseCommandLineTest()
         {
             var cmd = "-Smypc -Pprinter -l file.prn".Split(' ');
-            var job = CommandLineParser<LPQJob>.ParseCommandLine(cmd);
+            var job = _parser.ParseCommandLine(cmd);
 
             Assert.That(job, Is.EqualTo(new LPQJob {Server="mypc", Printer = "printer", Verbose = true}));
         }
@@ -20,7 +27,7 @@ namespace common.tests
         public void ParseCommandLineTestSpaces()
         {
             var cmd = "-S mypc -P printer file.prn".Split(' ');
-            var job = CommandLineParser<LPQJob>.ParseCommandLine(cmd);
+            var job = _parser.ParseCommandLine(cmd);
 
             Assert.That(job, Is.EqualTo(new LPQJob {Server="mypc", Printer = "printer", Verbose = false}));
         }
@@ -30,7 +37,7 @@ namespace common.tests
         public void ParseCommandLineMissingServer()
         {
             var cmd = "-P printer file.prn".Split(' ');
-            CommandLineParser<LPQJob>.ParseCommandLine(cmd);
+            _parser.ParseCommandLine(cmd);
         }
 
         [Test]
@@ -38,7 +45,7 @@ namespace common.tests
         public void ParseCommandLineMissingPrinter()
         {
             var cmd = "-S server file.prn".Split(' ');
-            CommandLineParser<LPQJob>.ParseCommandLine(cmd);
+            _parser.ParseCommandLine(cmd);
         }
 
         [Test]
@@ -46,7 +53,7 @@ namespace common.tests
         public void ParseCommandLinePrinterShouldntHaveSpaces([Values('\x0B', '\x0C', '\x09', ' ')] char c)
         {
             var cmd = new[] {"-Sserver", $"-Pprinter{c}name"};
-            CommandLineParser<LPQJob>.ParseCommandLine(cmd);
+            _parser.ParseCommandLine(cmd);
         }
     }
 }
