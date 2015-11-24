@@ -10,15 +10,11 @@ namespace common
 
         public bool AllowSpaces { get; set; } = true;
 
-        public ParameterAttribute(string parameter)
-        {
-            Parameter = parameter;
-        }
+        public bool Default { get; set; }
 
-        public ParameterAttribute(string parameter, bool required)
+        public ParameterAttribute(string parameter = null)
         {
             Parameter = parameter;
-            Required = required;
         }
     }
 }

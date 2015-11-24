@@ -49,7 +49,7 @@ namespace common
                 var parameterAttribute = GetParameterAttribute(property);
                 var flag = parameterAttribute.Parameter;
 
-                if (!currentArgument.StartsWith(flag))
+                if (flag == null || !currentArgument.StartsWith(flag))
                 {
                     continue;
                 }
@@ -70,15 +70,23 @@ namespace common
 
                     property.SetValue(_job, value, null);
 
-                    break;
+                    return;
                 }
 
                 if (property.PropertyType == typeof (bool))
                 {
                     property.SetValue(_job, true, null);
 
-                    break;
+                    return;
                 }
+            }
+
+            // Must be default argument
+            var defaultProperties = _properties.Where(prop => GetParameterAttribute(prop).Default);
+            foreach (var defaultProperty in defaultProperties)
+            {
+                defaultProperty.SetValue(_job, currentArgument, null);
+                return;
             }
         }
 

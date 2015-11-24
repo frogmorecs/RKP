@@ -42,6 +42,7 @@
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="LPQJob.cs" />
     <Compile Include="LPRClient.cs" />
+    <Compile Include="LPRJob.cs" />
     <Compile Include="ParameterAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -55,5 +55,16 @@ namespace common.tests
             var cmd = new[] {"-Sserver", $"-Pprinter{c}name"};
             _parser.ParseCommandLine(cmd);
         }
+
+        [Test]
+        public void ParseCommandLineWithDefaultParameter()
+        {
+            var parser = new CommandLineParser<LPRJob>();
+
+            var cmd = "-S mypc -P printer file.prn".Split(' ');
+            var job = parser.ParseCommandLine(cmd);
+
+            Assert.That(job, Is.EqualTo(new LPRJob { Server = "mypc", Printer = "printer", Verbose = false, Path = "file.prn"}));
+        }
     }
 }
