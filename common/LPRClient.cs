@@ -5,11 +5,16 @@ using System.Text;
 
 namespace common
 {
-    public static class LPRClient
+    public interface ILPRClient
+    {
+        IEnumerable<string> QueryPrinter(LPQJob lpqJob);
+    }
+
+    public class LPRClient : ILPRClient
     {
         private const int LPRPort = 515;
 
-        public static IEnumerable<string> QueryPrinter(LPQJob lpqJob)
+        public IEnumerable<string> QueryPrinter(LPQJob lpqJob)
         {
             using (var client = new TcpClient(lpqJob.Server, LPRPort))
             using (var stream = client.GetStream())

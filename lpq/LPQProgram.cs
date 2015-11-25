@@ -25,7 +25,9 @@ namespace lpq
 
             var parser = new CommandLineParser<LPQJob>();
             var job = parser.ParseCommandLine(args);
-            var lines = LPRClient.QueryPrinter(job);
+
+            ILPRClient lprClient = new LPRClient();
+            var lines = lprClient.QueryPrinter(job);
 
             foreach (var line in lines)
             {
