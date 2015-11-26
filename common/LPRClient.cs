@@ -36,11 +36,15 @@ namespace common
 
         public void PrintFile(LPRJob job)
         {
+            // TODO Sanitise MachineName
+            // TODO Sanitise UserName
+            // TODO Incrementing job number
+            // TODO Support line printer output
+
             using (var client = new TcpClient(job.Server, LPRPort))
             using (var stream = client.GetStream())
             {
                 stream.Write($"\x02{job.Printer}\n");
-                stream.Flush();
 
                 CheckResult(stream);
 
@@ -52,19 +56,16 @@ namespace common
                 controlFile.Append($"N{job.Path}\n");
 
                 stream.Write($"\x02{controlFile.Length} cfA001{Environment.MachineName}\n");
-                stream.Flush();
 
                 CheckResult(stream);
 
                 stream.Write(controlFile.ToString());
                 stream.WriteByte(0);
-                stream.Flush();
 
                 CheckResult(stream);
 
                 var fileSize = new FileInfo(job.Path).Length;
                 stream.Write($"\x03{fileSize} dfA001{Environment.MachineName}\n");
-                stream.Flush();
 
                 CheckResult(stream);
 
@@ -72,7 +73,6 @@ namespace common
                 fileStream.CopyTo(stream);
 
                 stream.WriteByte(0);
-                stream.Flush();
             }
         }
 
