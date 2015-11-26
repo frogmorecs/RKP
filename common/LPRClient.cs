@@ -51,7 +51,7 @@ namespace common
                 var controlFile = new StringBuilder();
                 controlFile.Append($"H{Environment.MachineName}\n");
                 controlFile.Append($"P{Environment.UserName}\n");
-                controlFile.Append($"odfA001{Environment.MachineName}\n");
+                controlFile.Append($"{job.FileType}dfA001{Environment.MachineName}\n");
                 controlFile.Append($"UdfA001{Environment.MachineName}\n");
                 controlFile.Append($"N{job.Path}\n");
 

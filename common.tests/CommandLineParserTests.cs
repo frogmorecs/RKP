@@ -63,7 +63,18 @@ namespace common.tests
             var cmd = "-S mypc -P printer file.prn".Split(' ');
             var job = parser.ParseCommandLine(cmd);
 
-            Assert.That(job, Is.EqualTo(new LPRJob { Server = "mypc", Printer = "printer", Verbose = false, Path = "file.prn"}));
+            Assert.That(job, Is.EqualTo(new LPRJob { Server = "mypc", Printer = "printer", FileType = "f", Path = "file.prn"}));
+        }
+
+        [Test]
+        public void ParseCommandLineFileType()
+        {
+            var parser = new CommandLineParser<LPRJob>();
+
+            var cmd = "-S mypc -P printer file.prn -o l".Split(' ');
+            var job = parser.ParseCommandLine(cmd);
+
+            Assert.That(job, Is.EqualTo(new LPRJob { Server = "mypc", Printer = "printer", FileType = "l", Path = "file.prn"}));
         }
     }
 }

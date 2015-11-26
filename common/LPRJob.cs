@@ -11,12 +11,12 @@ namespace common
         [Parameter(Default = true)]
         public string Path { get; set; }
 
-        [Parameter("-l")]
-        public bool Verbose { get; set; }
+        [Parameter("-o")]
+        public string FileType { get; set; } = "f";
 
         protected bool Equals(LPRJob other)
         {
-            return string.Equals(Server, other.Server) && string.Equals(Printer, other.Printer) && Verbose == other.Verbose && string.Equals(Path, other.Path);
+            return string.Equals(Server, other.Server) && string.Equals(Printer, other.Printer) && FileType == other.FileType && string.Equals(Path, other.Path);
         }
 
         public override bool Equals(object obj)
@@ -47,7 +47,7 @@ namespace common
                 var hashCode = Server?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ (Printer?.GetHashCode() ?? 0);
                 hashCode = (hashCode*397) ^ (Path?.GetHashCode() ?? 0);
-                hashCode = (hashCode*397) ^ Verbose.GetHashCode();
+                hashCode = (hashCode*397) ^ (FileType?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }
