@@ -1,21 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
 namespace common
 {
-    public static class StreamExtensions
-    {
-        public static void Write(this Stream stream, string text)
-        {
-            var data = Encoding.ASCII.GetBytes(text);
-            stream.Write(data, 0, data.Length);
-        }
-    }
-
     public interface ILPRClient
     {
         IEnumerable<string> QueryPrinter(LPQJob lpqJob);
