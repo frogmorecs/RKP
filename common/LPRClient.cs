@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
@@ -34,9 +35,9 @@ namespace common
 
         public void PrintFile(LPRJob job)
         {
-            // TODO Sanitise MachineName
-            // TODO Sanitise UserName
             // TODO Incrementing job number
+            var machineName = string.Join("", Environment.MachineName.Where(c => c > 32 && c < 128));
+            var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
 
             using (var client = new TcpClient(job.Server, LPRPort))
             using (var stream = client.GetStream())
@@ -46,13 +47,13 @@ namespace common
                 CheckResult(stream);
 
                 var controlFile = new StringBuilder();
-                controlFile.Append($"H{Environment.MachineName}\n");
-                controlFile.Append($"P{Environment.UserName}\n");
-                controlFile.Append($"{job.FileType}dfA001{Environment.MachineName}\n");
-                controlFile.Append($"UdfA001{Environment.MachineName}\n");
+                controlFile.Append($"H{machineName}\n");
+                controlFile.Append($"P{userName}\n");
+                controlFile.Append($"{job.FileType}dfA001{machineName}\n");
+                controlFile.Append($"UdfA001{machineName}\n");
                 controlFile.Append($"N{job.Path}\n");
 
-                stream.Write($"\x02{controlFile.Length} cfA001{Environment.MachineName}\n");
+                stream.Write($"\x02{controlFile.Length} cfA001{machineName}\n");
 
                 CheckResult(stream);
 
@@ -62,7 +63,7 @@ namespace common
                 CheckResult(stream);
 
                 var fileSize = new FileInfo(job.Path).Length;
-                stream.Write($"\x03{fileSize} dfA001{Environment.MachineName}\n");
+                stream.Write($"\x03{fileSize} dfA001{machineName}\n");
 
                 CheckResult(stream);
 
