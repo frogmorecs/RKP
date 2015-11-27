@@ -14,6 +14,9 @@ namespace common
         [Parameter("-o")]
         public string FileType { get; set; } = "f";
 
+        [Parameter("-d")]
+        public bool SendDataFileFirst { get; set; }
+
         protected bool Equals(LPRJob other)
         {
             return string.Equals(Server, other.Server) && string.Equals(Printer, other.Printer) && FileType == other.FileType && string.Equals(Path, other.Path);

@@ -45,8 +45,17 @@ namespace common
             using (var client = new TcpClient(job.Server, LPRPort))
             using (var stream = client.GetStream())
             {
-                WriteControlFile(job, stream, machineName, userName, jobIdentifier);
-                WriteDataFile(job, stream, jobIdentifier);
+                if (job.SendDataFileFirst)
+                {
+                    // TODO Check this when we have a working server
+                    WriteDataFile(job, stream, jobIdentifier);
+                    WriteControlFile(job, stream, machineName, userName, jobIdentifier);
+                }
+                else
+                {
+                    WriteControlFile(job, stream, machineName, userName, jobIdentifier);
+                    WriteDataFile(job, stream, jobIdentifier);
+                }
             }
         }
 
