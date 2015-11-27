@@ -16,6 +16,7 @@ namespace common
     public class LPRClient : ILPRClient
     {
         private const int LPRPort = 515;
+        private static int _jobNumber;
 
         public IEnumerable<string> QueryPrinter(LPQJob lpqJob)
         {
@@ -35,43 +36,50 @@ namespace common
 
         public void PrintFile(LPRJob job)
         {
-            // TODO Incrementing job number
             var machineName = string.Join("", Environment.MachineName.Where(c => c > 32 && c < 128));
             var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
+
+            _jobNumber = _jobNumber % 999 + 1;
+            var jobIdentifier = $"{_jobNumber:D3}{machineName}";
 
             using (var client = new TcpClient(job.Server, LPRPort))
             using (var stream = client.GetStream())
             {
-                stream.Write($"\x02{job.Printer}\n");
-
-                CheckResult(stream);
-
-                var controlFile = new StringBuilder();
-                controlFile.Append($"H{machineName}\n");
-                controlFile.Append($"P{userName}\n");
-                controlFile.Append($"{job.FileType}dfA001{machineName}\n");
-                controlFile.Append($"UdfA001{machineName}\n");
-                controlFile.Append($"N{job.Path}\n");
-
-                stream.Write($"\x02{controlFile.Length} cfA001{machineName}\n");
-
-                CheckResult(stream);
-
-                stream.Write(controlFile.ToString());
-                stream.WriteByte(0);
-
-                CheckResult(stream);
-
-                var fileSize = new FileInfo(job.Path).Length;
-                stream.Write($"\x03{fileSize} dfA001{machineName}\n");
-
-                CheckResult(stream);
-
-                var fileStream = new FileStream(job.Path, FileMode.Open);
-                fileStream.CopyTo(stream);
-
-                stream.WriteByte(0);
+                WriteControlFile(job, stream, machineName, userName, jobIdentifier);
+                WriteDataFile(job, stream, jobIdentifier);
             }
+        }
+
+        private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName, string jobIdentifier)
+        {
+            stream.Write($"\x02{job.Printer}\n");
+            CheckResult(stream);
+
+            var controlFile = new StringBuilder();
+            controlFile.Append($"H{machineName}\n");
+            controlFile.Append($"P{userName}\n");
+            controlFile.Append($"{job.FileType}dfA{jobIdentifier}\n");
+            controlFile.Append($"UdfA{jobIdentifier}\n");
+            controlFile.Append($"N{job.Path}\n");
+
+            stream.Write($"\x02{controlFile.Length} cfA{jobIdentifier}\n");
+            CheckResult(stream);
+
+            stream.Write(controlFile.ToString());
+            stream.WriteByte(0);
+            CheckResult(stream);
+        }
+
+        private static void WriteDataFile(LPRJob job, NetworkStream stream, string jobIdentifier)
+        {
+            var fileSize = new FileInfo(job.Path).Length;
+            stream.Write($"\x03{fileSize} dfA{jobIdentifier}\n");
+            CheckResult(stream);
+
+            var fileStream = new FileStream(job.Path, FileMode.Open);
+            fileStream.CopyTo(stream);
+            stream.WriteByte(0);
+            CheckResult(stream);
         }
 
         private static void CheckResult(NetworkStream stream)
