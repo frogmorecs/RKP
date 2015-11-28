@@ -39,15 +39,17 @@ namespace common
             var machineName = string.Join("", Environment.MachineName.Where(c => c > 32 && c < 128));
             var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
 
-            _jobNumber = _jobNumber % 999 + 1;
+            _jobNumber = _jobNumber%999 + 1;
             var jobIdentifier = $"{_jobNumber:D3}{machineName}";
 
             using (var client = new TcpClient(job.Server, LPRPort))
             using (var stream = client.GetStream())
             {
+                stream.WriteASCII($"\x02{job.Printer}\n");
+                CheckResult(stream);
+
                 if (job.SendDataFileFirst)
                 {
-                    // TODO Check this when we have a working server
                     WriteDataFile(job, stream, jobIdentifier);
                     WriteControlFile(job, stream, machineName, userName, jobIdentifier);
                 }
@@ -61,9 +63,6 @@ namespace common
 
         private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName, string jobIdentifier)
         {
-            stream.WriteASCII($"\x02{job.Printer}\n");
-            CheckResult(stream);
-
             var controlFile = new StringBuilder();
             controlFile.Append($"H{machineName}\n");
             controlFile.Append($"P{userName}\n");
