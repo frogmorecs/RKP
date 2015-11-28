@@ -25,7 +25,7 @@ namespace common
             using (var streamReader = new StreamReader(stream, Encoding.ASCII))
             {
                 var code = lpqJob.Verbose ? '\x04' : '\x03';
-                stream.Write($"{code}{lpqJob.Printer} \n");
+                stream.WriteASCII($"{code}{lpqJob.Printer} \n");
 
                 while (!streamReader.EndOfStream)
                 {
@@ -61,7 +61,7 @@ namespace common
 
         private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName, string jobIdentifier)
         {
-            stream.Write($"\x02{job.Printer}\n");
+            stream.WriteASCII($"\x02{job.Printer}\n");
             CheckResult(stream);
 
             var controlFile = new StringBuilder();
@@ -71,10 +71,10 @@ namespace common
             controlFile.Append($"UdfA{jobIdentifier}\n");
             controlFile.Append($"N{job.Path}\n");
 
-            stream.Write($"\x02{controlFile.Length} cfA{jobIdentifier}\n");
+            stream.WriteASCII($"\x02{controlFile.Length} cfA{jobIdentifier}\n");
             CheckResult(stream);
 
-            stream.Write(controlFile.ToString());
+            stream.WriteASCII(controlFile.ToString());
             stream.WriteByte(0);
             CheckResult(stream);
         }
@@ -82,7 +82,7 @@ namespace common
         private static void WriteDataFile(LPRJob job, NetworkStream stream, string jobIdentifier)
         {
             var fileSize = new FileInfo(job.Path).Length;
-            stream.Write($"\x03{fileSize} dfA{jobIdentifier}\n");
+            stream.WriteASCII($"\x03{fileSize} dfA{jobIdentifier}\n");
             CheckResult(stream);
 
             var fileStream = new FileStream(job.Path, FileMode.Open);

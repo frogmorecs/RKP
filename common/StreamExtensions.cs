@@ -7,7 +7,7 @@ namespace common
 {
     public static class StreamExtensions
     {
-        public static void Write(this Stream stream, string text)
+        public static void WriteASCII(this Stream stream, string text)
         {
             if (text.Any(c => c > 127))
             {

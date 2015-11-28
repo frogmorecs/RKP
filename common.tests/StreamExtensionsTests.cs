@@ -12,14 +12,14 @@ namespace common.tests
         public void TestExceptionOnNonASCII()
         {
             var stream = new MemoryStream();
-            stream.Write("String with non ascii character: \x058E");
+            stream.WriteASCII("String with non ascii character: \x058E");
         }
 
         [Test]
         public void TestWrite()
         {
             var stream = new MemoryStream();
-            stream.Write("\x00\x01\x02\x03");
+            stream.WriteASCII("\x00\x01\x02\x03");
 
             Assert.That(stream.ToArray(), Is.EqualTo(new byte[] {0,1,2,3}));
         }
