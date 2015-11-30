@@ -5,9 +5,22 @@ namespace lpq
 {
     public class LPQProgram
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            if (args.Length == 0)
+            try
+            {
+                var parser = new CommandLineParser<LPQJob>();
+                var job = parser.ParseCommandLine(args);
+
+                ILPRClient lprClient = new LPRClient();
+                var lines = lprClient.QueryPrinter(job);
+
+                foreach (var line in lines)
+                {
+                    Console.WriteLine(line);
+                }
+            }
+            catch (ParserException)
             {
                 Console.WriteLine("Displays the state of a remote lpd queue.");
                 Console.WriteLine();
@@ -20,20 +33,15 @@ namespace lpq
                 Console.WriteLine();
                 Console.WriteLine();
 
-                return;
+                return 1;
             }
-
-            var parser = new CommandLineParser<LPQJob>();
-            var job = parser.ParseCommandLine(args);
-
-            ILPRClient lprClient = new LPRClient();
-            var lines = lprClient.QueryPrinter(job);
-
-            foreach (var line in lines)
+            catch (Exception e)
             {
-                Console.WriteLine(line);
+                Console.WriteLine(e);
+                return 2;
             }
 
+            return 0;
         }
     }
 }

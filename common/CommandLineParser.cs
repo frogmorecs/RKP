@@ -5,6 +5,13 @@ using System.Reflection;
 
 namespace common
 {
+    public class ParserException : ApplicationException
+    {
+        public ParserException(string message) : base(message)
+        {
+        }
+    }
+
     public class CommandLineParser<T> where T: new()
     {
         private readonly T _job;
@@ -22,6 +29,10 @@ namespace common
 
         public T ParseCommandLine(string[] args)
         {
+            if (args.Length == 0)
+            {
+                throw new ParserException("Missing parameters");
+            }
             _args = args;
 
             for (_current = 0; _current < args.Length; _current++)
@@ -31,7 +42,7 @@ namespace common
 
             if (_requiredPropertyNames.Any())
             {
-                throw new ArgumentException("Missing option: " + _requiredPropertyNames.First());
+                throw new ParserException("Missing required parameters");
             }
 
             return _job;
