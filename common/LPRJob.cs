@@ -23,6 +23,9 @@ namespace common
         [Parameter("-d")]
         public bool SendDataFileFirst { get; set; }
 
+        [Parameter("-x")]
+        public bool SunOsCompatibility { get; set; } // Ignored
+
         protected bool Equals(LPRJob other)
         {
             return string.Equals(Server, other.Server) && string.Equals(Printer, other.Printer) && FileType == other.FileType && string.Equals(Path, other.Path);

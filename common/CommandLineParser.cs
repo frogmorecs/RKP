@@ -62,7 +62,17 @@ namespace common
 
                 if (property.PropertyType == typeof (string))
                 {
-                    var value = currentArgument.Length > 2 ? currentArgument.Substring(2) : _args[++_current];
+                    string value;
+                    if (currentArgument.Length > 2)
+                    {
+                        value = currentArgument.Substring(2);
+                    }
+                    else
+                    {
+                        _current++;
+                        value = _current < _args.Length ?_args[_current] : string.Empty;
+                    }
+
                     if (!parameterAttribute.AllowSpaces && ContainsWhitespace(value))
                     {
                         throw new ArgumentException("Spaces aren't allowed in printer names.");
