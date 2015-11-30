@@ -32,7 +32,7 @@ namespace common.tests
         }
 
         [Test]
-        [ExpectedException(typeof (ArgumentException))]
+        [ExpectedException(typeof (ParserException))]
         public void ParseCommandLineMissingServer()
         {
             var cmd = "-P printer file.prn".Split(' ');
@@ -40,7 +40,7 @@ namespace common.tests
         }
 
         [Test]
-        [ExpectedException(typeof (ArgumentException))]
+        [ExpectedException(typeof (ParserException))]
         public void ParseCommandLineMissingPrinter()
         {
             var cmd = "-S server file.prn".Split(' ');
