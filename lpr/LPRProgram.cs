@@ -3,7 +3,7 @@ using common;
 
 namespace lpr
 {
-    class LPRProgram
+    internal class LPRProgram
     {
         static int Main(string[] args)
         {
