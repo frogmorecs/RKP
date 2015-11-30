@@ -74,6 +74,10 @@ namespace common
             {
                 controlFile.Append($"C{job.Class}\n");
             }
+            if (job.JobName != null)
+            {
+                controlFile.Append($"J{job.JobName}\n");
+            }
 
             stream.WriteASCII($"\x02{controlFile.Length} cfA{jobIdentifier}\n");
             CheckResult(stream);

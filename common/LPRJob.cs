@@ -17,6 +17,9 @@ namespace common
         [Parameter("-C")]
         public string Class { get; set; }
 
+        [Parameter("-J")]
+        public string JobName{ get; set; }
+
         [Parameter("-d")]
         public bool SendDataFileFirst { get; set; }
 
