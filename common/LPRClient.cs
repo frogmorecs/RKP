@@ -70,6 +70,11 @@ namespace common
             controlFile.Append($"UdfA{jobIdentifier}\n");
             controlFile.Append($"N{job.Path}\n");
 
+            if (job.Class != null)
+            {
+                controlFile.Append($"C{job.Class}\n");
+            }
+
             stream.WriteASCII($"\x02{controlFile.Length} cfA{jobIdentifier}\n");
             CheckResult(stream);
 

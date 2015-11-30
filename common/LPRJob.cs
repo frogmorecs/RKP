@@ -14,6 +14,9 @@ namespace common
         [Parameter("-o")]
         public string FileType { get; set; } = "f";
 
+        [Parameter("-C")]
+        public string Class { get; set; }
+
         [Parameter("-d")]
         public bool SendDataFileFirst { get; set; }
 
