@@ -45,7 +45,7 @@ namespace common
 
         public void PrintFile(LPRJob job)
         {
-            PrintFileAsync(job).Wait();
+            PrintFileAsync(job).Wait(); // TODO Make synchronous
         }
 
         public Task PrintFileAsync(LPRJob job)
