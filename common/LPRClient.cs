@@ -11,6 +11,7 @@ namespace common
     public interface ILPRClient
     {
         IEnumerable<string> QueryPrinter(LPQJob lpqJob);
+        void PrintFile(LPRJob job);
         Task PrintFileAsync(LPRJob job);
     }
 
@@ -39,6 +40,11 @@ namespace common
                     yield return streamReader.ReadLine();
                 }
             }
+        }
+
+        public void PrintFile(LPRJob job)
+        {
+            PrintFileAsync(job).Wait();
         }
 
         public Task PrintFileAsync(LPRJob job)
