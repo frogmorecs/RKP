@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace common
 {
     public interface ILPRClient
     {
         IEnumerable<string> QueryPrinter(LPQJob lpqJob);
-        void PrintFile(LPRJob job);
+        Task PrintFileAsync(LPRJob job);
     }
 
     public class LPRClient : ILPRClient
@@ -20,7 +20,6 @@ namespace common
         {
             public TcpClient Client { get; set; }
             public LPRJob Job { get; set; }
-            public EventWaitHandle WaitHandle { get; set; }
         }
 
         private const int LPRPort = 515;
@@ -42,65 +41,50 @@ namespace common
             }
         }
 
-        public void PrintFile(LPRJob job)
+        public Task PrintFileAsync(LPRJob job)
         {
-            using (var client = new TcpClient())
+            var client = new TcpClient();
+            var connectInfo = new ConnectInfo
             {
-                var connectInfo = new ConnectInfo
-                {
-                    Client = client,
-                    Job = job,
-                    WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset),
-                };
+                Client = client,
+                Job = job,
+            };
 
-
-                client.BeginConnect(job.Server, LPRPort, OnConnect, connectInfo);
-                connectInfo.WaitHandle.WaitOne();
-            }
+            return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
+                               .ContinueWith(OnConnect);
         }
 
         private static void OnConnect(IAsyncResult result)
         {
             var connectInfo = (ConnectInfo) result.AsyncState;
-            try
+            var machineName = string.Join("", Environment.MachineName.Where(c => c > 32 && c < 128));
+            var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
+
+
+            _jobNumber = _jobNumber%999 + 1;
+            var jobIdentifier = $"{_jobNumber:D3}{machineName}";
+
+            using (var client = connectInfo.Client)
+            using (var stream = client.GetStream())
             {
-                connectInfo.Client.EndConnect(result);
+                stream.WriteASCII($"\x02{connectInfo.Job.Printer}\n");
+                CheckResult(stream);
 
-                var machineName = string.Join("", Environment.MachineName.Where(c => c > 32 && c < 128));
-                var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
-
-
-                _jobNumber = _jobNumber%999 + 1;
-                var jobIdentifier = $"{_jobNumber:D3}{machineName}";
-
-                using (var stream = connectInfo.Client.GetStream())
+                if (connectInfo.Job.SendDataFileFirst)
                 {
-                    stream.WriteASCII($"\x02{connectInfo.Job.Printer}\n");
-                    CheckResult(stream);
-
-                    if (connectInfo.Job.SendDataFileFirst)
-                    {
-                        WriteDataFile(connectInfo.Job, stream, jobIdentifier);
-                        WriteControlFile(connectInfo.Job, stream, machineName, userName, jobIdentifier);
-                    }
-                    else
-                    {
-                        WriteControlFile(connectInfo.Job, stream, machineName, userName, jobIdentifier);
-                        WriteDataFile(connectInfo.Job, stream, jobIdentifier);
-                    }
+                    WriteDataFile(connectInfo.Job, stream, jobIdentifier);
+                    WriteControlFile(connectInfo.Job, stream, machineName, userName, jobIdentifier);
                 }
-            }
-            catch (ObjectDisposedException)
-            {
-
-            }
-            finally
-            {
-                connectInfo.WaitHandle.Set();
+                else
+                {
+                    WriteControlFile(connectInfo.Job, stream, machineName, userName, jobIdentifier);
+                    WriteDataFile(connectInfo.Job, stream, jobIdentifier);
+                }
             }
         }
 
-        private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName, string jobIdentifier)
+        private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName,
+            string jobIdentifier)
         {
             var controlFile = new StringBuilder();
             controlFile.Append($"H{machineName}\n");

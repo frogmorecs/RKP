@@ -13,7 +13,9 @@ namespace lpr
                 var job = parser.ParseCommandLine(args);
 
                 ILPRClient lprClient = new LPRClient();
-                lprClient.PrintFile(job);
+
+                var task = lprClient.PrintFileAsync(job);
+                task.Wait();
             }
             catch (ParserException)
             {
