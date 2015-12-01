@@ -28,7 +28,14 @@ namespace common
 
         protected bool Equals(LPRJob other)
         {
-            return string.Equals(Server, other.Server) && string.Equals(Printer, other.Printer) && FileType == other.FileType && string.Equals(Path, other.Path);
+            return string.Equals(Server, other.Server) 
+                    && string.Equals(Printer, other.Printer) 
+                    && string.Equals(Path, other.Path)
+                    && string.Equals(FileType, other.FileType)
+                    && string.Equals(Class, other.Class)
+                    && string.Equals(JobName, other.JobName)
+                    && SendDataFileFirst == other.SendDataFileFirst
+                    && SunOsCompatibility == other.SunOsCompatibility;
         }
 
         public override bool Equals(object obj)
