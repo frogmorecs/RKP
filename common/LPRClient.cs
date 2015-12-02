@@ -11,30 +11,61 @@ namespace common
 {
     public interface ILPRClient
     {
-        IEnumerable<string> QueryPrinter(LPQJob lpqJob);
+        IEnumerable<string> QueryPrinter(LPQJob job);
+        Task<List<string>> QueryPrinterAsync(LPQJob lpqJob);
+
         void PrintFile(LPRJob job);
         Task PrintFileAsync(LPRJob job);
     }
 
     public class LPRClient : ILPRClient
     {
-        private class ConnectInfo
+        private class ConnectInfo<T>
         {
             public TcpClient Client { get; set; }
-            public LPRJob Job { get; set; }
+            public T Job { get; set; }
         }
 
         private const int LPRPort = 515;
         private static int _jobNumber;
 
-        public IEnumerable<string> QueryPrinter(LPQJob lpqJob)
+        public IEnumerable<string> QueryPrinter(LPQJob job)
         {
-            using (var client = new TcpClient(lpqJob.Server, LPRPort))
+            var connectionInfo = new ConnectInfo<LPQJob>
+            {
+                Job = job,
+                Client = new TcpClient(job.Server, LPRPort)
+            };
+
+            return QueryPrinter(connectionInfo);
+        }
+
+        public Task<List<string>> QueryPrinterAsync(LPQJob job)
+        {
+            var client = new TcpClient();
+            var connectInfo = new ConnectInfo<LPQJob>
+            {
+                Client = client,
+                Job = job,
+            };
+
+            return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
+                               .ContinueWith(OnConnectLPQ);
+        }
+
+        private static List<string> OnConnectLPQ(IAsyncResult result)
+        {
+            return QueryPrinter((ConnectInfo<LPQJob>) result.AsyncState).ToList();
+        }
+
+        private static IEnumerable<string> QueryPrinter(ConnectInfo<LPQJob> connectInfo)
+        {
+            using (var client = connectInfo.Client)
             using (var stream = client.GetStream())
             using (var streamReader = new StreamReader(stream, Encoding.ASCII))
             {
-                var code = lpqJob.Verbose ? '\x04' : '\x03';
-                stream.WriteASCII($"{code}{lpqJob.Printer} \n");
+                var code = connectInfo.Job.Verbose ? '\x04' : '\x03';
+                stream.WriteASCII($"{code}{connectInfo.Job.Printer} \n");
 
                 while (!streamReader.EndOfStream)
                 {
@@ -51,19 +82,19 @@ namespace common
         public Task PrintFileAsync(LPRJob job)
         {
             var client = new TcpClient();
-            var connectInfo = new ConnectInfo
+            var connectInfo = new ConnectInfo<LPRJob>
             {
                 Client = client,
                 Job = job,
             };
 
             return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
-                               .ContinueWith(OnConnect);
+                               .ContinueWith(OnConnectLPR);
         }
 
-        private static void OnConnect(IAsyncResult result)
+        private static void OnConnectLPR(IAsyncResult result)
         {
-            var connectInfo = (ConnectInfo) result.AsyncState;
+            var connectInfo = (ConnectInfo<LPRJob>) result.AsyncState;
 
             using (var client = connectInfo.Client)
             using (var stream = client.GetStream())
