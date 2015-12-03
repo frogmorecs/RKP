@@ -51,7 +51,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\common\lprshared.csproj">
+    <ProjectReference Include="..\lprshared\lprshared.csproj">
       <Project>{2dc143e0-fc8c-4118-9999-dfa69454e438}</Project>
       <Name>lprshared</Name>
     </ProjectReference>
