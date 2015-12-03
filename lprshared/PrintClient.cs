@@ -41,11 +41,8 @@ namespace lprshared
 
         private static List<string> OnConnectLPQ(IAsyncResult result)
         {
-            return QueryPrinter((ConnectInfo<LPQJob>) result.AsyncState).ToList();
-        }
+            var connectInfo = (ConnectInfo<LPQJob>) result.AsyncState;
 
-        private static IEnumerable<string> QueryPrinter(ConnectInfo<LPQJob> connectInfo)
-        {
             using (var client = connectInfo.Client)
             using (var stream = client.GetStream())
             using (var streamReader = new StreamReader(stream, Encoding.ASCII))
@@ -53,10 +50,13 @@ namespace lprshared
                 var code = connectInfo.Job.Verbose ? '\x04' : '\x03';
                 stream.WriteASCII($"{code}{connectInfo.Job.Printer} \n");
 
+                var list = new List<string>();
                 while (!streamReader.EndOfStream)
                 {
-                    yield return streamReader.ReadLine();
+                    list.Add(streamReader.ReadLine());
                 }
+
+                return list;
             }
         }
 
