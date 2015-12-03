@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace common
+namespace lprshared
 {
     public class ParserException : ApplicationException
     {

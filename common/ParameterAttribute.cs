@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace common
+namespace lprshared
 {
     class ParameterAttribute : Attribute
     {

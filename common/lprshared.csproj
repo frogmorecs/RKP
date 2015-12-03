@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{114FF269-089A-4387-A62E-7F15866BDB1D}</ProjectGuid>
+    <ProjectGuid>{2DC143E0-FC8C-4118-9999-DFA69454E438}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>common.tests</RootNamespace>
-    <AssemblyName>common.tests</AssemblyName>
+    <RootNamespace>lprshared</RootNamespace>
+    <AssemblyName>lprshared</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,22 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineParserTests.cs" />
+    <Compile Include="CommandLineParser.cs" />
+    <Compile Include="LPQJob.cs" />
+    <Compile Include="PrintClient.cs" />
+    <Compile Include="LPRJob.cs" />
+    <Compile Include="ParameterAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StreamExtensionsTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\common\common.csproj">
-      <Project>{2dc143e0-fc8c-4118-9999-dfa69454e438}</Project>
-      <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lpq\lpq.csproj">
-      <Project>{1dd70cb8-38fd-4ef8-acee-c28a4983eaa3}</Project>
-      <Name>lpq</Name>
-    </ProjectReference>
+    <Compile Include="StreamExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

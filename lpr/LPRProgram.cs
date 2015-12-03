@@ -1,5 +1,5 @@
 ﻿using System;
-using common;
+using lprshared;
 
 namespace lpr
 {
@@ -12,9 +12,10 @@ namespace lpr
                 var parser = new CommandLineParser<LPRJob>();
                 var job = parser.ParseCommandLine(args);
 
-                ILPRClient lprClient = new LPRClient();
+                IPrintClient lprClient = new PrintClient();
 
-                lprClient.PrintFile(job);
+                var task = lprClient.PrintFileAsync(job);
+                task.Wait();
             }
             catch (ParserException)
             {

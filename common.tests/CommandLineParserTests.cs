@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace common.tests
+namespace lprshared.tests
 {
     [TestFixture]
     public class CommandLineParserTests

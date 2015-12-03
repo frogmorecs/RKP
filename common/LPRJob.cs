@@ -1,4 +1,4 @@
-namespace common
+namespace lprshared
 {
     public class LPRJob
     {

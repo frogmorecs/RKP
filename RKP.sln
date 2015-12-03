@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lpq", "lpq\lpq.csproj", "{1DD70CB8-38FD-4EF8-ACEE-C28A4983EAA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csproj", "{2DC143E0-FC8C-4118-9999-DFA69454E438}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lprshared", "common\lprshared.csproj", "{2DC143E0-FC8C-4118-9999-DFA69454E438}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common.tests", "common.tests\common.tests.csproj", "{114FF269-089A-4387-A62E-7F15866BDB1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lprshared.tests", "common.tests\lprshared.tests.csproj", "{114FF269-089A-4387-A62E-7F15866BDB1D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lpr", "lpr\lpr.csproj", "{317BDE6B-FFF1-4F19-9556-A486FDF2B356}"
 EndProject

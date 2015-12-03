@@ -7,18 +7,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace common
+namespace lprshared
 {
-    public interface ILPRClient
+    public interface IPrintClient
     {
-        IEnumerable<string> QueryPrinter(LPQJob job);
         Task<List<string>> QueryPrinterAsync(LPQJob lpqJob);
-
-        void PrintFile(LPRJob job);
         Task PrintFileAsync(LPRJob job);
     }
 
-    public class LPRClient : ILPRClient
+    public class PrintClient : IPrintClient
     {
         private class ConnectInfo<T>
         {
@@ -28,17 +25,6 @@ namespace common
 
         private const int LPRPort = 515;
         private static int _jobNumber;
-
-        public IEnumerable<string> QueryPrinter(LPQJob job)
-        {
-            var connectionInfo = new ConnectInfo<LPQJob>
-            {
-                Job = job,
-                Client = new TcpClient(job.Server, LPRPort)
-            };
-
-            return QueryPrinter(connectionInfo);
-        }
 
         public Task<List<string>> QueryPrinterAsync(LPQJob job)
         {
@@ -72,11 +58,6 @@ namespace common
                     yield return streamReader.ReadLine();
                 }
             }
-        }
-
-        public void PrintFile(LPRJob job)
-        {
-            PrintFileAsync(job).Wait(); // TODO Make synchronous
         }
 
         public Task PrintFileAsync(LPRJob job)

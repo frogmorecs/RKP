@@ -1,5 +1,5 @@
 ﻿using System;
-using common;
+using lprshared;
 
 namespace lpq
 {
@@ -12,10 +12,10 @@ namespace lpq
                 var parser = new CommandLineParser<LPQJob>();
                 var job = parser.ParseCommandLine(args);
 
-                ILPRClient lprClient = new LPRClient();
-                var lines = lprClient.QueryPrinter(job);
+                IPrintClient lprClient = new PrintClient();
+                var task = lprClient.QueryPrinterAsync(job);
 
-                foreach (var line in lines)
+                foreach (var line in task.Result)
                 {
                     Console.WriteLine(line);
                 }
