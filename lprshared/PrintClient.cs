@@ -14,6 +14,7 @@ namespace lprshared
         Task<List<string>> QueryPrinterAsync(LPQJob lpqJob);
         Task PrintFileAsync(LPRJob job);
         Task CancelAsync(LPRMJob job);
+        Task StartAsync(LPStartJob job);
     }
 
     public class PrintClient : IPrintClient
@@ -85,6 +86,30 @@ namespace lprshared
 
             return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
                                .ContinueWith(OnConnectCancel);
+        }
+
+        public Task StartAsync(LPStartJob job)
+        {
+            var client = new TcpClient();
+            var connectInfo = new ConnectInfo<LPStartJob>
+            {
+                Client = client,
+                Job = job,
+            };
+
+            return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
+                               .ContinueWith(OnConnectStart);
+        }
+
+        private void OnConnectStart(IAsyncResult result)
+        {
+            var connectInfo = (ConnectInfo<LPStartJob>)result.AsyncState;
+
+            using (var client = connectInfo.Client)
+            using (var stream = client.GetStream())
+            {
+                stream.WriteASCII($"\x01{connectInfo.Job.Printer}");
+            }
         }
 
         private void OnConnectCancel(IAsyncResult result)
