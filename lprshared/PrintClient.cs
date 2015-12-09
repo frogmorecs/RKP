@@ -38,7 +38,7 @@ namespace lprshared
             };
 
             return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
-                               .ContinueWith(OnConnectLPQ);
+                .ContinueWith(OnConnectLPQ);
         }
 
         private static List<string> OnConnectLPQ(IAsyncResult result)
@@ -62,19 +62,6 @@ namespace lprshared
             }
         }
 
-        public Task PrintFileAsync(LPRJob job)
-        {
-            var client = new TcpClient();
-            var connectInfo = new ConnectInfo<LPRJob>
-            {
-                Client = client,
-                Job = job,
-            };
-
-            return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
-                               .ContinueWith(OnConnectLPR);
-        }
-
         public Task CancelAsync(LPRMJob job)
         {
             var client = new TcpClient();
@@ -85,7 +72,21 @@ namespace lprshared
             };
 
             return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
-                               .ContinueWith(OnConnectCancel);
+                .ContinueWith(OnConnectCancel);
+        }
+
+        private void OnConnectCancel(IAsyncResult result)
+        {
+            var connectInfo = (ConnectInfo<LPRMJob>) result.AsyncState;
+
+            using (var client = connectInfo.Client)
+            using (var stream = client.GetStream())
+            {
+                var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
+
+                stream.WriteASCII($"\x05{connectInfo.Job.Printer} {userName} {connectInfo.Job.Id}\n");
+                CheckResult(stream);
+            }
         }
 
         public Task StartAsync(LPStartJob job)
@@ -98,12 +99,12 @@ namespace lprshared
             };
 
             return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
-                               .ContinueWith(OnConnectStart);
+                .ContinueWith(OnConnectStart);
         }
 
         private void OnConnectStart(IAsyncResult result)
         {
-            var connectInfo = (ConnectInfo<LPStartJob>)result.AsyncState;
+            var connectInfo = (ConnectInfo<LPStartJob>) result.AsyncState;
 
             using (var client = connectInfo.Client)
             using (var stream = client.GetStream())
@@ -112,18 +113,17 @@ namespace lprshared
             }
         }
 
-        private void OnConnectCancel(IAsyncResult result)
+        public Task PrintFileAsync(LPRJob job)
         {
-            var connectInfo = (ConnectInfo<LPRMJob>)result.AsyncState;
-
-            using (var client = connectInfo.Client)
-            using (var stream = client.GetStream())
+            var client = new TcpClient();
+            var connectInfo = new ConnectInfo<LPRJob>
             {
-                var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
+                Client = client,
+                Job = job,
+            };
 
-                stream.WriteASCII($"\x05{connectInfo.Job.Printer} {userName} {connectInfo.Job.Id}\n");
-                CheckResult(stream);
-            }
+            return Task.Factory.FromAsync(client.BeginConnect, client.EndConnect, job.Server, LPRPort, connectInfo)
+                .ContinueWith(OnConnectLPR);
         }
 
         private static void OnConnectLPR(IAsyncResult result)
@@ -155,6 +155,7 @@ namespace lprshared
                 }
             }
         }
+
 
         private static void WriteControlFile(LPRJob job, NetworkStream stream, string machineName, string userName, string jobIdentifier)
         {
