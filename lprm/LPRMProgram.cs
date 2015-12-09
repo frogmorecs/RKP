@@ -18,14 +18,14 @@ namespace lprm
             }
             catch (ParserException)
             {
-                Console.WriteLine("Displays the state of a remote lpd queue.");
+                Console.WriteLine("Remove job from a remote lpd queue.");
                 Console.WriteLine();
                 Console.WriteLine("Usage: lprm -Sserver -Pprinter -Jid");
                 Console.WriteLine();
                 Console.WriteLine("Options:");
                 Console.WriteLine("      -S server   Name or ipaddress of the host providing lpd service");
                 Console.WriteLine("      -P printer  Name of the print queue");
-                Console.WriteLine("      -J          Id of the job");
+                Console.WriteLine("      -J id       Id of the job");
                 Console.WriteLine();
                 Console.WriteLine();
 
