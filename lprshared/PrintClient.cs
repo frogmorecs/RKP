@@ -162,7 +162,6 @@ namespace lprshared
             controlFile.Append($"H{machineName}\n");
             controlFile.Append($"P{userName}\n");
             controlFile.Append($"{job.FileType}dfA{jobIdentifier}\n");
-            controlFile.Append($"UdfA{jobIdentifier}\n");
             controlFile.Append($"N{job.Path}\n");
 
             if (job.Class != null)
