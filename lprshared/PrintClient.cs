@@ -163,7 +163,14 @@ namespace lprshared
             controlFile.Append($"H{machineName}\n");
             controlFile.Append($"P{userName}\n");
             controlFile.Append($"{job.FileType}dfA{jobIdentifier}\n");
-            controlFile.Append($"N{job.Path}\n");
+            if (job.InputFile != null)
+            {
+                controlFile.Append($"N{job.InputFile.GetType().Name}\n");
+            }
+            else
+            {
+                controlFile.Append($"N{job.Path}\n");
+            }
 
             if (job.Class != null)
             {
@@ -184,11 +191,29 @@ namespace lprshared
 
         private static void WriteDataFile(LPRJob job, NetworkStream stream, string jobIdentifier)
         {
-            var fileSize = new FileInfo(job.Path).Length;
+            long fileSize;
+            if (job.InputFile != null)
+            {
+                fileSize = job.InputFile.Length;
+            }
+            else
+            {
+                fileSize = new FileInfo(job.Path).Length;
+            }
+
             stream.WriteASCII($"\x03{fileSize} dfA{jobIdentifier}\n");
             CheckResult(stream);
 
-            var fileStream = new FileStream(job.Path, FileMode.Open);
+            Stream fileStream;
+            if (job.InputFile != null)
+            {
+                fileStream = job.InputFile;
+            }
+            else
+            {
+                fileStream = new FileStream(job.Path, FileMode.Open);
+            }
+            
             fileStream.CopyTo(stream);
             stream.WriteByte(0);
             CheckResult(stream);

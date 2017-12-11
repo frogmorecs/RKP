@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace lprshared
 {
     public class LPRJob
@@ -25,6 +27,8 @@ namespace lprshared
 
         [Parameter("-x")]
         public bool SunOsCompatibility { get; set; } // Ignored
+
+        public Stream InputFile { get; set; }
 
         protected bool Equals(LPRJob other)
         {
