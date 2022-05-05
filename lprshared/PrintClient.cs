@@ -85,7 +85,6 @@ namespace lprshared
                 var userName = string.Join("", Environment.UserName.Where(c => c > 32 && c < 128));
 
                 stream.WriteASCII($"\x05{connectInfo.Job.Printer} {userName} {connectInfo.Job.Id}\n");
-                CheckResult(stream);
             }
         }
 
